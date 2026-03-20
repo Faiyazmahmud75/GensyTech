@@ -115,25 +115,51 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('scroll', handleNavbar, { passive: true });
 
     // ===========================
-    // MOBILE MENU
+    // MOBILE SIDEBAR LOGIC
     // ===========================
     const hamburger = document.getElementById('hamburgerBtn');
-    const navMenu = document.getElementById('navMenu');
+    const sidebar = document.getElementById('sidebar');
+    const sidebarClose = document.getElementById('sidebarClose');
+    const sidebarLinks = document.querySelectorAll('.sidebar__link');
 
-    if (hamburger && navMenu) {
+    function toggleSidebar(open) {
+        if (open) {
+            sidebar.classList.add('active');
+            hamburger.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        } else {
+            sidebar.classList.remove('active');
+            hamburger.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+    }
+
+    if (hamburger && sidebar) {
         hamburger.addEventListener('click', () => {
-            hamburger.classList.toggle('active');
-            navMenu.classList.toggle('active');
-        });
-
-        // Close menu on link click
-        navMenu.querySelectorAll('.navbar__link').forEach(link => {
-            link.addEventListener('click', () => {
-                hamburger.classList.remove('active');
-                navMenu.classList.remove('active');
-            });
+            const isOpen = sidebar.classList.contains('active');
+            toggleSidebar(!isOpen);
         });
     }
+
+    if (sidebarClose) {
+        sidebarClose.addEventListener('click', () => {
+            toggleSidebar(false);
+        });
+    }
+
+    // Close sidebar on link click
+    sidebarLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            toggleSidebar(false);
+        });
+    });
+
+    // Close on click outside (on the sidebar background)
+    sidebar.addEventListener('click', (e) => {
+        if (e.target === sidebar) {
+            toggleSidebar(false);
+        }
+    });
 
     // ===========================
     // SCROLL REVEAL ANIMATIONS
