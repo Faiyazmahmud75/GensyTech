@@ -36,7 +36,8 @@
                 <a href="#faq" class="navbar__link">FAQ</a>
                 <a href="#about" class="navbar__link">About</a>
             </nav>
-            <a href="https://calendar.google.com/calendar/appointments/schedules/YOUR_SCHEDULE_ID" target="_blank" rel="noopener noreferrer" class="btn btn--primary navbar__cta">Book Free Consultation</a>
+            <a href="https://calendar.google.com/calendar/appointments/schedules/YOUR_SCHEDULE_ID" target="_blank"
+                rel="noopener noreferrer" class="btn btn--primary navbar__cta">Book Free Consultation</a>
             <button class="navbar__hamburger" id="hamburgerBtn" aria-label="Toggle menu">
                 <span></span><span></span><span></span>
             </button>
@@ -67,7 +68,8 @@
                         web technology and AI.
                     </p>
                     <div class="hero__actions">
-                        <a href="https://calendar.google.com/calendar/appointments/schedules/YOUR_SCHEDULE_ID" target="_blank" rel="noopener noreferrer" class="btn btn--primary btn--lg">
+                        <a href="https://calendar.google.com/calendar/appointments/schedules/YOUR_SCHEDULE_ID"
+                            target="_blank" rel="noopener noreferrer" class="btn btn--primary btn--lg">
                             <span>Book Free Consultation</span>
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -767,8 +769,8 @@
                 <h2 class="consultation__title">Ready To Grow Your Business With <span>Technology?</span></h2>
                 <p class="consultation__desc">Book a free consultation and discover how modern websites and AI
                     automation can transform your business.</p>
-                <a href="https://calendar.google.com/calendar/appointments/schedules/YOUR_SCHEDULE_ID" target="_blank" rel="noopener noreferrer"
-                    class="btn btn--white btn--lg">
+                <a href="https://calendar.google.com/calendar/appointments/schedules/YOUR_SCHEDULE_ID" target="_blank"
+                    rel="noopener noreferrer" class="btn btn--white btn--lg">
                     <span>Schedule Free Consultation</span>
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M5 12h14M12 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" />
@@ -900,12 +902,23 @@
             <div class="container final-cta__inner reveal">
                 <h2 class="final-cta__title">Let's Build Something <span class="gradient-text">Powerful</span> For Your
                     Business</h2>
-                <a href="https://calendar.google.com/calendar/appointments/schedules/YOUR_SCHEDULE_ID" target="_blank" rel="noopener noreferrer" class="btn btn--primary btn--lg">
-                    <span>Book Free Consultation</span>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M5 12h14M12 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" />
-                    </svg>
-                </a>
+                <!-- Google Calendar Appointment Scheduling begin -->
+                <link href="https://calendar.google.com/calendar/scheduling-button-script.css" rel="stylesheet">
+                <script src="https://calendar.google.com/calendar/scheduling-button-script.js" async></script>
+                <script>
+                    (function () {
+                        var target = document.currentScript;
+                        window.addEventListener('load', function () {
+                            calendar.schedulingButton.load({
+                                url: 'https://calendar.google.com/calendar/appointments/schedules/AcZssZ20UFgEpZzPrkqxy91qCTtN6tpmih1_mpuHNWmoEsxkJ1zPhxBUf3BS21ELlbPcj0ASvuibInNn?gv=true',
+                                color: '#F4511E',
+                                label: 'Book an appointment',
+                                target,
+                            });
+                        });
+                    })();
+                </script>
+                <!-- end Google Calendar Appointment Scheduling -->
                 <p class="final-cta__reassurance">Free consultation · No commitment required</p>
             </div>
         </section>
@@ -966,7 +979,8 @@
             <div class="footer__links">
                 <h4>Contact</h4>
                 <a href="mailto:hello@gensytech.com">hello@gensytech.com</a>
-                <a href="https://calendar.google.com/calendar/appointments/schedules/YOUR_SCHEDULE_ID" target="_blank" rel="noopener noreferrer">Book Consultation</a>
+                <a href="https://calendar.google.com/calendar/appointments/schedules/YOUR_SCHEDULE_ID" target="_blank"
+                    rel="noopener noreferrer">Book Consultation</a>
             </div>
         </div>
         <div class="footer__bottom">
@@ -986,7 +1000,11 @@
                     <img src="logo/logo_dark.png" alt="GensyTech" class="navbar__logo-img">
                 </a>
                 <button class="sidebar__close" id="sidebarClose" aria-label="Close menu">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
                 </button>
             </div>
             <nav class="sidebar__nav">
@@ -999,16 +1017,31 @@
             <div class="sidebar__footer">
                 <div class="sidebar__social">
                     <a href="#" class="sidebar__social-link" aria-label="LinkedIn">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z">
+                            </path>
+                            <rect x="2" y="9" width="4" height="12"></rect>
+                            <circle cx="4" cy="4" r="2"></circle>
+                        </svg>
                     </a>
                     <a href="#" class="sidebar__social-link" aria-label="X (Twitter)">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4l11.733 16h4.267l-11.733 -16zM4 20l6.768 -6.768M13.277 10.723l6.723 -6.723"/></svg>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 4l11.733 16h4.267l-11.733 -16zM4 20l6.768 -6.768M13.277 10.723l6.723 -6.723" />
+                        </svg>
                     </a>
                     <a href="#" class="sidebar__social-link" aria-label="Instagram">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+                            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+                        </svg>
                     </a>
                 </div>
-                <a href="https://calendar.google.com/calendar/appointments/schedules/YOUR_SCHEDULE_ID" target="_blank" rel="noopener noreferrer" class="btn btn--primary btn--lg sidebar__cta">Book Free Consultation</a>
+                <a href="https://calendar.google.com/calendar/appointments/schedules/YOUR_SCHEDULE_ID" target="_blank"
+                    rel="noopener noreferrer" class="btn btn--primary btn--lg sidebar__cta">Book Free Consultation</a>
             </div>
         </div>
     </div>
