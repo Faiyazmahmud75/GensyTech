@@ -357,4 +357,234 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // ===========================
+    // PREMIUM BOOKING SYSTEM (Timezone Aware)
+    // ===========================
+    const bookingSection = document.getElementById('booking');
+    if (bookingSection) {
+        const calendarDates = document.getElementById('calendarDates');
+        const currentMonthStr = document.getElementById('currentMonthStr');
+        const prevMonthBtn = document.getElementById('prevMonth');
+        const nextMonthBtn = document.getElementById('nextMonth');
+        const timeSlotsContainer = document.getElementById('timeSlots');
+        const selectedDateDisplay = document.getElementById('selectedDateDisplay');
+        const goToStep2Btn = document.getElementById('goToStep2');
+        const bookingForm = document.getElementById('bookingForm');
+        const step1 = document.getElementById('step1');
+        const step2 = document.getElementById('step2');
+        const step3 = document.getElementById('step3');
+        const backToStep1 = document.getElementById('backToStep1');
+        const finalSelectedDateTime = document.getElementById('finalSelectedDateTime');
+        const resetBooking = document.getElementById('resetBooking');
+        const timezoneSelect = document.getElementById('timezone');
+
+        let currentDate = new Date();
+        let selectedDate = null;
+        let selectedTimeSlot = null; // Store as { dhakaHour, localDisplay }
+        let selectedTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+        const months = [
+            'January', 'February', 'March', 'April', 'May', 'June',
+            'July', 'August', 'September', 'October', 'November', 'December'
+        ];
+
+        // Dhaka Availability (All 24 hours)
+        const dhakaSlots = Array.from({ length: 24 }, (_, i) => i);
+
+        // Major Timezones
+        const majorTimezones = [
+            "UTC", "Asia/Dhaka", "Asia/Dubai", "Asia/Hong_Kong", "Asia/Kolkata", "Asia/Singapore", 
+            "Asia/Tokyo", "Australia/Sydney", "Europe/Berlin", "Europe/London", "Europe/Paris", 
+            "America/New_York", "America/Chicago", "America/Denver", "America/Los_Angeles", "America/Sao_Paulo"
+        ];
+
+        function initTimezoneSelect() {
+            // Add detected timezone if not in major list
+            if (!majorTimezones.includes(selectedTimezone)) {
+                majorTimezones.push(selectedTimezone);
+            }
+            majorTimezones.sort();
+            
+            timezoneSelect.innerHTML = majorTimezones.map(tz => 
+                `<option value="${tz}" ${tz === selectedTimezone ? 'selected' : ''}>${tz.replace('_', ' ')}</option>`
+            ).join('');
+
+            timezoneSelect.addEventListener('change', (e) => {
+                selectedTimezone = e.target.value;
+                selectedTimeSlot = null;
+                goToStep2Btn.disabled = true;
+                renderTimeSlots();
+            });
+        }
+
+        function renderCalendar() {
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            currentMonthStr.textContent = `${months[month]} ${year}`;
+
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const today = new Date();
+            today.setHours(0,0,0,0);
+
+            calendarDates.innerHTML = '';
+            for (let i = 0; i < firstDay; i++) {
+                calendarDates.appendChild(document.createElement('div'));
+            }
+
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dateObj = new Date(year, month, day);
+                const cell = document.createElement('div');
+                cell.className = 'date-cell';
+                cell.textContent = day;
+
+                if (dateObj < today) {
+                    cell.classList.add('disabled');
+                } else {
+                    if (dateObj.getTime() === today.getTime()) cell.classList.add('today');
+                    if (selectedDate && dateObj.getTime() === selectedDate.getTime()) cell.classList.add('selected');
+                    cell.addEventListener('click', () => selectDate(dateObj));
+                }
+                calendarDates.appendChild(cell);
+            }
+        }
+
+        function selectDate(date) {
+            selectedDate = date;
+            selectedTimeSlot = null;
+            goToStep2Btn.disabled = true;
+            
+            const options = { weekday: 'long', day: 'numeric', month: 'short' };
+            selectedDateDisplay.textContent = date.toLocaleDateString('en-US', options);
+            
+            renderCalendar();
+            renderTimeSlots();
+        }
+
+        function formatInTimezone(dhakaHour, targetTimezone) {
+            // 1. Create a Date object set to 01/01/2026 @ dhakaHour in Dhaka time
+            // Dhaka is UTC+6. So UTC time is dhakaHour - 6.
+            const date = new Date(Date.UTC(2026, 0, 1, dhakaHour - 6, 0, 0));
+            
+            return date.toLocaleTimeString('en-US', {
+                timeZone: targetTimezone,
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true
+            });
+        }
+
+        function renderTimeSlots() {
+            timeSlotsContainer.innerHTML = '';
+            if (!selectedDate) {
+                timeSlotsContainer.innerHTML = '<p class="text-center py-4 opacity-50">Please select a date first</p>';
+                return;
+            }
+
+            dhakaSlots.forEach(hour => {
+                const displayTime = formatInTimezone(hour, selectedTimezone);
+                const slot = document.createElement('div');
+                slot.className = 'time-slot';
+                slot.textContent = displayTime;
+                
+                if (selectedTimeSlot && selectedTimeSlot.dhakaHour === hour) {
+                    slot.classList.add('selected');
+                }
+                
+                slot.addEventListener('click', () => {
+                    document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('selected'));
+                    slot.classList.add('selected');
+                    selectedTimeSlot = { dhakaHour: hour, localDisplay: displayTime };
+                    goToStep2Btn.disabled = false;
+                });
+                timeSlotsContainer.appendChild(slot);
+            });
+        }
+
+        function switchStep(from, to) {
+            from.classList.remove('active');
+            setTimeout(() => to.classList.add('active'), 300);
+        }
+
+        // Navigation
+        prevMonthBtn.addEventListener('click', () => {
+            currentDate.setMonth(currentDate.getMonth() - 1);
+            renderCalendar();
+        });
+
+        nextMonthBtn.addEventListener('click', () => {
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            renderCalendar();
+        });
+
+        goToStep2Btn.addEventListener('click', () => {
+            const options = { month: 'short', day: 'numeric', year: 'numeric' };
+            finalSelectedDateTime.textContent = `${selectedDate.toLocaleDateString('en-US', options)} @ ${selectedTimeSlot.localDisplay} (${selectedTimezone})`;
+            switchStep(step1, step2);
+        });
+
+        backToStep1.addEventListener('click', () => switchStep(step2, step1));
+
+        bookingForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const formData = new FormData(bookingForm);
+            
+            // Generate Dhaka-based ISO time for backend recording
+            const bookingDateDhaka = new Date(selectedDate);
+            bookingDateDhaka.setHours(selectedTimeSlot.dhakaHour, 0, 0, 0);
+
+            const data = {
+                selectedDate: selectedDate.toISOString().split('T')[0],
+                selectedTime: selectedTimeSlot.localDisplay,
+                visitorTimezone: selectedTimezone,
+                dhakaAppointmentTime: bookingDateDhaka.toISOString(), // Correct UTC for Google Cal
+                dhakaHour: selectedTimeSlot.dhakaHour,
+                name: formData.get('name'),
+                email: formData.get('email'),
+                website: formData.get('website'),
+                message: formData.get('message')
+            };
+
+            const WEBHOOK_URL = 'https://hook.eu1.make.com/78olndbocmp1vm6menrjl0qeqg31rsuy';
+            const submitBtn = bookingForm.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            
+            submitBtn.innerHTML = '<span>Processing...</span>';
+            submitBtn.disabled = true;
+
+            fetch(WEBHOOK_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(res => {
+                if (res.ok) {
+                    switchStep(step2, step3);
+                    bookingForm.reset();
+                } else {
+                    alert('Booking failed. Please try again.');
+                }
+            })
+            .catch(() => alert('Network error. Please try again.'))
+            .finally(() => {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            });
+        });
+
+        resetBooking.addEventListener('click', () => {
+            selectedDate = null;
+            selectedTimeSlot = null;
+            goToStep2Btn.disabled = true;
+            switchStep(step3, step1);
+            renderCalendar();
+            renderTimeSlots();
+        });
+
+        // Init
+        initTimezoneSelect();
+        renderCalendar();
+        renderTimeSlots();
+    }
+
 });
