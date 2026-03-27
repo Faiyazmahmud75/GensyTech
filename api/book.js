@@ -8,7 +8,12 @@ export async function handler(event, context) {
   }
 
   // Use .trim() to remove any invisible whitespace from Netlify settings
-  const WEBHOOK_URL = process.env.MAKE_WEBHOOK_URL?.trim();
+  // Strip any 'MAKE_WEBHOOK_URL: ' prefix if the user pasted it by mistake
+  let WEBHOOK_URL = process.env.MAKE_WEBHOOK_URL?.trim();
+  if (WEBHOOK_URL && WEBHOOK_URL.startsWith('MAKE_WEBHOOK_URL:')) {
+    WEBHOOK_URL = WEBHOOK_URL.replace('MAKE_WEBHOOK_URL:', '').trim();
+  }
+  
   const API_KEY = process.env.MAKE_API_KEY?.trim();
 
   if (!WEBHOOK_URL || !API_KEY) {
