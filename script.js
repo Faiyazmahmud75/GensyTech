@@ -346,7 +346,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const rect = hero.getBoundingClientRect();
             const x = e.clientX - rect.left;
             const y = e.clientY - rect.top;
-            
+
             cursorGlow.style.left = `${x}px`;
             cursorGlow.style.top = `${y}px`;
             cursorGlow.classList.add('active');
@@ -393,8 +393,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Major Timezones
         const majorTimezones = [
-            "UTC", "Asia/Dhaka", "Asia/Dubai", "Asia/Hong_Kong", "Asia/Kolkata", "Asia/Singapore", 
-            "Asia/Tokyo", "Australia/Sydney", "Europe/Berlin", "Europe/London", "Europe/Paris", 
+            "UTC", "Asia/Dhaka", "Asia/Dubai", "Asia/Hong_Kong", "Asia/Kolkata", "Asia/Singapore",
+            "Asia/Tokyo", "Australia/Sydney", "Europe/Berlin", "Europe/London", "Europe/Paris",
             "America/New_York", "America/Chicago", "America/Denver", "America/Los_Angeles", "America/Sao_Paulo"
         ];
 
@@ -404,8 +404,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 majorTimezones.push(selectedTimezone);
             }
             majorTimezones.sort();
-            
-            timezoneSelect.innerHTML = majorTimezones.map(tz => 
+
+            timezoneSelect.innerHTML = majorTimezones.map(tz =>
                 `<option value="${tz}" ${tz === selectedTimezone ? 'selected' : ''}>${tz.replace('_', ' ')}</option>`
             ).join('');
 
@@ -425,7 +425,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const firstDay = new Date(year, month, 1).getDay();
             const daysInMonth = new Date(year, month + 1, 0).getDate();
             const today = new Date();
-            today.setHours(0,0,0,0);
+            today.setHours(0, 0, 0, 0);
 
             calendarDates.innerHTML = '';
             for (let i = 0; i < firstDay; i++) {
@@ -453,10 +453,10 @@ document.addEventListener('DOMContentLoaded', () => {
             selectedDate = date;
             selectedTimeSlot = null;
             goToStep2Btn.disabled = true;
-            
+
             const options = { weekday: 'long', day: 'numeric', month: 'short' };
             selectedDateDisplay.textContent = date.toLocaleDateString('en-US', options);
-            
+
             renderCalendar();
             renderTimeSlots();
         }
@@ -465,7 +465,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // 1. Create a Date object set to 01/01/2026 @ dhakaHour in Dhaka time
             // Dhaka is UTC+6. So UTC time is dhakaHour - 6.
             const date = new Date(Date.UTC(2026, 0, 1, dhakaHour - 6, 0, 0));
-            
+
             return date.toLocaleTimeString('en-US', {
                 timeZone: targetTimezone,
                 hour: '2-digit',
@@ -486,11 +486,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 const slot = document.createElement('div');
                 slot.className = 'time-slot';
                 slot.textContent = displayTime;
-                
+
                 if (selectedTimeSlot && selectedTimeSlot.dhakaHour === hour) {
                     slot.classList.add('selected');
                 }
-                
+
                 slot.addEventListener('click', () => {
                     document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('selected'));
                     slot.classList.add('selected');
@@ -528,7 +528,7 @@ document.addEventListener('DOMContentLoaded', () => {
         bookingForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const formData = new FormData(bookingForm);
-            
+
             // Generate Dhaka-based ISO time for backend recording
             const bookingDateDhaka = new Date(selectedDate);
             bookingDateDhaka.setHours(selectedTimeSlot.dhakaHour, 0, 0, 0);
@@ -548,11 +548,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const WEBHOOK_URL = 'https://hook.eu1.make.com/78olndbocmp1vm6menrjl0qeqg31rsuy';
             const submitBtn = bookingForm.querySelector('button[type="submit"]');
             const originalText = submitBtn.innerHTML;
-            
+
             submitBtn.innerHTML = '<span>Processing...</span>';
             submitBtn.disabled = true;
 
-            fetch(WEBHOOK_URL, {
+            // SECURE BACKEND PROXY
+            const API_ENDPOINT = '/api/book';
+
+            fetch(API_ENDPOINT, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
@@ -562,7 +565,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     switchStep(step2, step3);
                     bookingForm.reset();
                 } else {
-                    alert('Booking failed. Please try again.');
+                    alert('Booking failed. Please try again or verify your server configuration.');
                 }
             })
             .catch(() => alert('Network error. Please try again.'))
