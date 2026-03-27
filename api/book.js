@@ -47,7 +47,13 @@ export async function handler(event, context) {
     console.error('Proxy error:', error);
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: 'Internal server error' })
+      body: JSON.stringify({ 
+        error: 'Internal server error', 
+        message: error.message,
+        stack: error.stack,
+        hasFetch: typeof fetch !== 'undefined',
+        bodyType: typeof event.body
+      })
     };
   }
 }
