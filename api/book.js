@@ -7,8 +7,9 @@ export async function handler(event, context) {
     };
   }
 
-  const WEBHOOK_URL = process.env.MAKE_WEBHOOK_URL;
-  const API_KEY = process.env.MAKE_API_KEY;
+  // Use .trim() to remove any invisible whitespace from Netlify settings
+  const WEBHOOK_URL = process.env.MAKE_WEBHOOK_URL?.trim();
+  const API_KEY = process.env.MAKE_API_KEY?.trim();
 
   if (!WEBHOOK_URL || !API_KEY) {
     console.error('Missing environment variables: MAKE_WEBHOOK_URL or MAKE_API_KEY');
@@ -48,11 +49,8 @@ export async function handler(event, context) {
     return {
       statusCode: 500,
       body: JSON.stringify({ 
-        error: 'Internal server error', 
-        message: error.message,
-        stack: error.stack,
-        hasFetch: typeof fetch !== 'undefined',
-        bodyType: typeof event.body
+        error: 'Internal server error',
+        message: 'There was an issue processing your booking.'
       })
     };
   }
