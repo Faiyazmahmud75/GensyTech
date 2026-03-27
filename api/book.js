@@ -49,8 +49,9 @@ export async function handler(event, context) {
     return {
       statusCode: 500,
       body: JSON.stringify({ 
-        error: 'Internal server error',
-        message: 'There was an issue processing your booking.'
+        error: 'Internal server error', 
+        message: error.message,
+        stack: error.stack
       })
     };
   }
