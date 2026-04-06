@@ -560,19 +560,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)
             })
-            .then(res => {
-                if (res.ok) {
-                    switchStep(step2, step3);
-                    bookingForm.reset();
-                } else {
-                    alert('Booking failed. Please try again or verify your server configuration.');
-                }
-            })
-            .catch(() => alert('Network error. Please try again.'))
-            .finally(() => {
-                submitBtn.innerHTML = originalText;
-                submitBtn.disabled = false;
-            });
+                .then(res => {
+                    if (res.ok) {
+                        switchStep(step2, step3);
+                        bookingForm.reset();
+                    } else {
+                        alert('Booking failed. Please try again or verify your server configuration.');
+                    }
+                })
+                .catch(() => alert('Network error. Please try again.'))
+                .finally(() => {
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                });
         });
 
         resetBooking.addEventListener('click', () => {
@@ -588,6 +588,142 @@ document.addEventListener('DOMContentLoaded', () => {
         initTimezoneSelect();
         renderCalendar();
         renderTimeSlots();
+    }
+
+    // ===========================
+    // PORTFOLIO FILTERING
+    // ===========================
+    const filterButtons = document.querySelectorAll('.portfolio__filter');
+    const portfolioCards = document.querySelectorAll('.portfolio-card');
+
+    filterButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const filter = btn.getAttribute('data-filter');
+
+            // Update active button
+            filterButtons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            // Filter cards
+            portfolioCards.forEach(card => {
+                const category = card.getAttribute('data-category');
+
+                if (filter === 'all' || filter === category) {
+                    card.classList.remove('hidden');
+                    card.style.display = 'block';
+                    setTimeout(() => {
+                        card.style.opacity = '1';
+                        card.style.transform = 'scale(1)';
+                    }, 10);
+                } else {
+                    card.style.opacity = '0';
+                    card.style.transform = 'scale(0.9)';
+                    setTimeout(() => {
+                        card.classList.add('hidden');
+                        card.style.display = 'none';
+                    }, 500); // Match CSS transition duration
+                }
+            });
+        });
+    });
+
+    // ===========================
+    // DYNAMIC PORTFOLIO SCROLL DURATION
+    // ===========================
+    function initPortfolioScroll() {
+        const images = document.querySelectorAll('.portfolio-card__img');
+        const speed = 200; // Target Speed: 400 pixels per second
+
+        images.forEach(img => {
+            const handleLoad = () => {
+                const rect = img.parentElement.getBoundingClientRect();
+                const containerHeight = rect.height;
+                const imgWidth = img.offsetWidth;
+
+                // Calculate the actual rendered height of the long screenshot
+                // Since it's width: 100%, the rendered height = naturalHeight * (renderedWidth / naturalWidth)
+                const renderedHeight = img.naturalHeight * (imgWidth / img.naturalWidth);
+
+                if (renderedHeight > containerHeight) {
+                    const scrollDistance = renderedHeight - containerHeight;
+                    const duration = (scrollDistance / speed).toFixed(2);
+                    img.style.setProperty('--scroll-duration', `${duration}s`);
+                }
+            };
+
+            if (img.complete) {
+                handleLoad();
+            } else {
+                img.addEventListener('load', handleLoad);
+            }
+        });
+    }
+
+    // Initialize on load and also on window resize (to adjust for container changes)
+    initPortfolioScroll();
+    window.addEventListener('resize', initPortfolioScroll);
+
+    // ===========================
+    // 17. UNIFIED SUPPORT WIDGET LOGIC
+    // ===========================
+    const supportWidget = document.getElementById('supportWidget');
+    const supportFab = document.getElementById('supportFab');
+    const supportChatBody = document.getElementById('supportChatBody');
+    const supportShortcuts = document.querySelectorAll('.support-shortcut');
+
+    if (supportFab && supportWidget) {
+        supportFab.addEventListener('click', () => {
+            supportWidget.classList.toggle('active');
+
+            // If opening, scroll to bottom
+            if (supportWidget.classList.contains('active')) {
+                setTimeout(() => {
+                    supportChatBody.scrollTop = supportChatBody.scrollHeight;
+                }, 100);
+            }
+        });
+
+        // Close on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && supportWidget.classList.contains('active')) {
+                supportWidget.classList.remove('active');
+            }
+        });
+
+        // Handle Shortcuts
+        supportShortcuts.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const type = btn.getAttribute('data-type');
+
+                if (type === 'ai') {
+                    addSupportMessage('user', 'I need some AI assistance.');
+                    setTimeout(() => {
+                        addSupportMessage('bot', 'I can help with that! I can answer questions about our services, process, or help you book a consultation. What would you like to know?');
+                    }, 1000);
+                } else if (type === 'booking') {
+                    supportWidget.classList.remove('active');
+                    const bookingSection = document.getElementById('booking');
+                    if (bookingSection) {
+                        bookingSection.scrollIntoView({ behavior: 'smooth' });
+                    }
+                }
+                // WhatsApp is a link, so it handles itself. 
+                // We might want to close the widget when clicking WhatsApp but usually better to leave it open for context.
+            });
+        });
+
+        function addSupportMessage(sender, text) {
+            const msg = document.createElement('div');
+            msg.className = `support-msg support-msg--${sender}`;
+            msg.innerHTML = `<p>${text}</p>`;
+            supportChatBody.appendChild(msg);
+
+            // Auto scroll
+            supportChatBody.scrollTo({
+                top: supportChatBody.scrollHeight,
+                behavior: 'smooth'
+            });
+        }
     }
 
 });
