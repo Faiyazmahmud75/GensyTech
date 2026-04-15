@@ -178,6 +178,20 @@ ol {
     transform: translateY(-2px);
 }
 
+.btn--whatsapp {
+    background: #25D366;
+    color: var(--white);
+    box-shadow: 0 4px 20px rgba(37, 211, 102, 0.3);
+}
+
+.btn--whatsapp:hover {
+    background: #1ebc59;
+    box-shadow: 0 6px 30px rgba(37, 211, 102, 0.45);
+    transform: translateY(-2px);
+    color: var(--white);
+}
+
+
 .btn--outline {
     background: transparent;
     color: var(--dark);
@@ -265,6 +279,7 @@ ol {
 .navbar__nav {
     display: flex;
     gap: 32px;
+    margin-left: 40px;
 }
 
 .navbar__link {
@@ -312,6 +327,40 @@ ol {
 
 .navbar__link.active::after {
     width: 100%;
+}
+
+.navbar__lang {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    font-size: 14px;
+    font-weight: 600;
+    margin-left: auto;
+    margin-right: 24px;
+}
+
+.navbar__lang a {
+    color: var(--gray-500);
+    transition: color 0.3s var(--ease);
+}
+
+.navbar__lang a:hover,
+.navbar--scrolled .navbar__lang a:hover {
+    color: var(--dark);
+}
+
+.navbar__lang a.active {
+    color: var(--orange);
+}
+
+.navbar__lang-sep {
+    color: var(--gray-300);
+}
+
+@media (max-width: 1024px) {
+    .navbar__lang {
+        display: none;
+    }
 }
 
 .navbar__hamburger {
@@ -1160,6 +1209,7 @@ ol {
     gap: 32px;
     max-width: 800px;
     margin: 0 auto;
+    margin-bottom: 40px;
 }
 
 .results__card {
@@ -1442,6 +1492,7 @@ ol {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 24px;
+    align-items: stretch;
 }
 
 .case-study-card {
@@ -1451,6 +1502,9 @@ ol {
     box-shadow: var(--shadow-card);
     transition: all 0.4s var(--ease);
     border: 1px solid var(--gray-100);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 }
 
 .case-study-card:hover {
@@ -1476,6 +1530,9 @@ ol {
 
 .case-study-card__body {
     padding: 24px 28px 28px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
 }
 
 .case-study-card__body h3 {
@@ -1492,6 +1549,7 @@ ol {
 
 .case-study-card__section:last-child {
     margin-bottom: 0;
+    margin-top: auto; /* Push the result section to the bottom */
 }
 
 .case-study-card__label {
@@ -2166,6 +2224,7 @@ ol {
         font-size: 36px;
     }
 }
+
 /* ================================================
    18. PREMIUM BOOKING SECTION
    ================================================ */
@@ -2174,6 +2233,18 @@ ol {
     background: var(--dark);
     position: relative;
     overflow: hidden;
+}
+
+.booking .section-tag {
+    background: rgba(247, 147, 30, 0.15);
+}
+
+.booking .section-title {
+    color: var(--white);
+}
+
+.booking .section-desc {
+    color: rgba(255, 255, 255, 0.7);
 }
 
 .booking-card {
@@ -2506,7 +2577,7 @@ ol {
     color: var(--dark-2);
 }
 
-.form-group input, 
+.form-group input,
 .form-group textarea {
     padding: 14px 18px;
     border-radius: var(--radius-md);
@@ -2515,7 +2586,7 @@ ol {
     transition: all 0.3s var(--ease);
 }
 
-.form-group input:focus, 
+.form-group input:focus,
 .form-group textarea:focus {
     outline: none;
     border-color: var(--orange);
@@ -2561,6 +2632,7 @@ ol {
     .booking-grid {
         grid-template-columns: 240px 1fr 280px;
     }
+
     .booking-col {
         padding: 30px;
     }
@@ -2570,6 +2642,7 @@ ol {
     .booking-grid {
         grid-template-columns: 240px 1fr;
     }
+
     .booking-col--time {
         grid-column: span 2;
         border-top: 1px solid var(--gray-100);
@@ -2578,15 +2651,18 @@ ol {
         flex-wrap: wrap;
         gap: 20px;
     }
+
     .time-slots {
         flex-direction: row;
         overflow-x: auto;
         max-height: none;
         padding-bottom: 10px;
     }
+
     .time-slot {
         min-width: 120px;
     }
+
     .time-footer {
         width: 100%;
         margin-top: 0;
@@ -2598,32 +2674,41 @@ ol {
     .booking-grid {
         grid-template-columns: 1fr;
     }
+
     .booking-col {
         border-right: none;
         border-bottom: 1px solid var(--gray-100);
     }
+
     .booking-col--sidebar {
         padding: 20px;
     }
+
     .booking-logo {
         margin-bottom: 30px;
     }
+
     .booking-steps {
         flex-direction: row;
         justify-content: space-between;
     }
+
     .step-text {
         display: none;
     }
+
     .step-divider {
         display: none;
     }
+
     .form-grid {
         grid-template-columns: 1fr;
     }
+
     .form-group:last-of-type {
         grid-column: span 1;
     }
+
     .form-footer {
         grid-column: span 1;
     }
@@ -2681,7 +2766,7 @@ ol {
     transition: color 0.3s var(--ease);
 }
 
-.booking-select:focus + svg {
+.booking-select:focus+svg {
     color: var(--orange);
 }
 
@@ -2735,12 +2820,14 @@ ol {
     height: 100%;
     object-fit: cover;
     object-position: top;
-    transition: object-position 1.5s ease-out; /* Fast scroll back */
+    transition: object-position 1.5s ease-out;
+    /* Fast scroll back */
 }
 
 .portfolio-card:hover .portfolio-card__img {
     object-position: bottom;
-    transition: object-position var(--scroll-duration, 5s) linear; /* Dynamic duration */
+    transition: object-position var(--scroll-duration, 5s) linear;
+    /* Dynamic duration */
 }
 
 .portfolio-card__overlay {
@@ -2862,17 +2949,20 @@ ol {
     bottom: 30px !important;
     right: 30px !important;
     top: auto !important;
-    z-index: 9999 !important; /* Extremely high to stay above everything */
+    z-index: 9999 !important;
+    /* Extremely high to stay above everything */
     display: flex;
     flex-direction: column;
     align-items: flex-end;
     gap: 20px;
-    pointer-events: none; /* Allow clicks to pass through the container, but button/window re-enable them */
+    pointer-events: none;
+    /* Allow clicks to pass through the container, but button/window re-enable them */
 }
 
-.support-fab, 
+.support-fab,
 .support-window {
-    pointer-events: auto; /* Re-enable pointer events for the interactive parts */
+    pointer-events: auto;
+    /* Re-enable pointer events for the interactive parts */
 }
 
 /* FAB Button */

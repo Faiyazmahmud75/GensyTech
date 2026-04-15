@@ -222,6 +222,33 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ===========================
+    // LOCALE & TRANSLATIONS
+    // ===========================
+    const isBengali = document.documentElement.lang === 'bn';
+    const locale = isBengali ? 'bn-BD' : 'en-US';
+
+    const strings = {
+        en: {
+            typing: 'Typing...',
+            processing: 'Processing...',
+            selectDateFirst: 'Please select a date first',
+            bookingFailed: 'Booking failed. Please try again or verify your server configuration.',
+            networkError: 'Network error. Please try again.',
+            at: '@'
+        },
+        bn: {
+            typing: 'টাইপ করা হচ্ছে...',
+            processing: 'প্রসেসিং হচ্ছে...',
+            selectDateFirst: 'অনুগ্রহ করে আগে একটি তারিখ নির্বাচন করুন',
+            bookingFailed: 'বুকিং ব্যর্থ হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।',
+            networkError: 'নেটওয়ার্ক সমস্যা। অনুগ্রহ করে আবার চেষ্টা করুন।',
+            at: '@'
+        }
+    };
+
+    const t = isBengali ? strings.bn : strings.en;
+
+    // ===========================
     // FAQ ACCORDION
     // ===========================
     const faqItems = document.querySelectorAll('.faq__item');
@@ -271,7 +298,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Add typing indicator
                 const typingMsg = document.createElement('div');
                 typingMsg.className = 'demo__msg demo__msg--bot';
-                typingMsg.innerHTML = `<p style="opacity:0.6">Typing...</p>`;
+                typingMsg.innerHTML = `<p style="opacity:0.6">${t.typing}</p>`;
                 chatBody.appendChild(typingMsg);
                 chatBody.scrollTop = chatBody.scrollHeight;
 
@@ -383,11 +410,6 @@ document.addEventListener('DOMContentLoaded', () => {
         let selectedTimeSlot = null; // Store as { dhakaHour, localDisplay }
         let selectedTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-        const months = [
-            'January', 'February', 'March', 'April', 'May', 'June',
-            'July', 'August', 'September', 'October', 'November', 'December'
-        ];
-
         // Dhaka Availability (All 24 hours)
         const dhakaSlots = Array.from({ length: 24 }, (_, i) => i);
 
@@ -420,7 +442,11 @@ document.addEventListener('DOMContentLoaded', () => {
         function renderCalendar() {
             const year = currentDate.getFullYear();
             const month = currentDate.getMonth();
-            currentMonthStr.textContent = `${months[month]} ${year}`;
+
+            // Localized month and year
+            const monthName = currentDate.toLocaleString(locale, { month: 'long' });
+            const yearName = currentDate.toLocaleString(locale, { year: 'numeric', useGrouping: false });
+            currentMonthStr.textContent = `${monthName} ${yearName}`;
 
             const firstDay = new Date(year, month, 1).getDay();
             const daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -436,7 +462,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const dateObj = new Date(year, month, day);
                 const cell = document.createElement('div');
                 cell.className = 'date-cell';
-                cell.textContent = day;
+                cell.textContent = day.toLocaleString(locale, { useGrouping: false });
 
                 if (dateObj < today) {
                     cell.classList.add('disabled');
@@ -455,7 +481,7 @@ document.addEventListener('DOMContentLoaded', () => {
             goToStep2Btn.disabled = true;
 
             const options = { weekday: 'long', day: 'numeric', month: 'short' };
-            selectedDateDisplay.textContent = date.toLocaleDateString('en-US', options);
+            selectedDateDisplay.textContent = date.toLocaleDateString(locale, options);
 
             renderCalendar();
             renderTimeSlots();
@@ -466,7 +492,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Dhaka is UTC+6. So UTC time is dhakaHour - 6.
             const date = new Date(Date.UTC(2026, 0, 1, dhakaHour - 6, 0, 0));
 
-            return date.toLocaleTimeString('en-US', {
+            return date.toLocaleTimeString(locale, {
                 timeZone: targetTimezone,
                 hour: '2-digit',
                 minute: '2-digit',
@@ -477,7 +503,7 @@ document.addEventListener('DOMContentLoaded', () => {
         function renderTimeSlots() {
             timeSlotsContainer.innerHTML = '';
             if (!selectedDate) {
-                timeSlotsContainer.innerHTML = '<p class="text-center py-4 opacity-50">Please select a date first</p>';
+                timeSlotsContainer.innerHTML = `<p class="text-center py-4 opacity-50">${t.selectDateFirst}</p>`;
                 return;
             }
 
@@ -519,7 +545,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         goToStep2Btn.addEventListener('click', () => {
             const options = { month: 'short', day: 'numeric', year: 'numeric' };
-            finalSelectedDateTime.textContent = `${selectedDate.toLocaleDateString('en-US', options)} @ ${selectedTimeSlot.localDisplay} (${selectedTimezone})`;
+            finalSelectedDateTime.textContent = `${selectedDate.toLocaleDateString(locale, options)} ${t.at} ${selectedTimeSlot.localDisplay} (${selectedTimezone})`;
             switchStep(step1, step2);
         });
 
@@ -545,12 +571,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 message: formData.get('message')
             };
 
-            const WEBHOOK_URL = 'https://hook.eu1.make.com/78olndbocmp1vm6menrjl0qeqg31rsuy';
-            const submitBtn = bookingForm.querySelector('button[type="submit"]');
-            const originalText = submitBtn.innerHTML;
+            const webHookBtn = bookingForm.querySelector('button[type="submit"]');
+            const originalText = webHookBtn.innerHTML;
 
-            submitBtn.innerHTML = '<span>Processing...</span>';
-            submitBtn.disabled = true;
+            webHookBtn.innerHTML = `<span>${t.processing}</span>`;
+            webHookBtn.disabled = true;
 
             // SECURE BACKEND PROXY
             const API_ENDPOINT = '/api/book';
@@ -565,10 +590,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         switchStep(step2, step3);
                         bookingForm.reset();
                     } else {
-                        alert('Booking failed. Please try again or verify your server configuration.');
+                        alert(t.bookingFailed);
                     }
                 })
-                .catch(() => alert('Network error. Please try again.'))
+                .catch(() => alert(t.networkError))
                 .finally(() => {
                     submitBtn.innerHTML = originalText;
                     submitBtn.disabled = false;
