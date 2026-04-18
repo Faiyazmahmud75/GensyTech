@@ -694,7 +694,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const supportWidget = document.getElementById('supportWidget');
     const supportFab = document.getElementById('supportFab');
     const supportChatBody = document.getElementById('supportChatBody');
-    const supportShortcuts = document.querySelectorAll('.support-shortcut');
 
     if (supportFab && supportWidget) {
         supportFab.addEventListener('click', () => {
@@ -715,27 +714,73 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // Handle Shortcuts
-        supportShortcuts.forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const type = btn.getAttribute('data-type');
+        // Handle Chat Form Submission
+        const chatForm = document.getElementById('supportChatForm');
+        const chatInput = document.getElementById('supportChatInput');
+        const sendBtn = chatForm?.querySelector('.support-send-btn');
+        let chatHistory = [];
 
-                if (type === 'ai') {
-                    addSupportMessage('user', 'I need some AI assistance.');
-                    setTimeout(() => {
-                        addSupportMessage('bot', 'I can help with that! I can answer questions about our services, process, or help you book a consultation. What would you like to know?');
-                    }, 1000);
-                } else if (type === 'booking') {
-                    supportWidget.classList.remove('active');
-                    const bookingSection = document.getElementById('booking');
-                    if (bookingSection) {
-                        bookingSection.scrollIntoView({ behavior: 'smooth' });
+        if (chatForm) {
+            chatForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const text = chatInput.value.trim();
+                if (!text) return;
+
+                // Add to UI
+                addSupportMessage('user', text);
+                chatInput.value = '';
+                chatInput.focus();
+
+                // Add to history
+                chatHistory.push({ role: 'user', content: text });
+
+                // Show typing indicator
+                const typingId = addTypingIndicator();
+                sendBtn.disabled = true;
+
+                try {
+                    const response = await fetch('/api/chat', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ chatHistory })
+                    });
+
+                    removeTypingIndicator(typingId);
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        const aiReply = data.reply || 'I am sorry, I did not understand that.';
+                        // Basic markdown-to-html for bold text or newlines if Make.com returns standard text formatting
+                        let formattedReply = aiReply.replace(/\n/g, '<br>');
+                        addSupportMessage('bot', formattedReply);
+                        chatHistory.push({ role: 'assistant', content: aiReply });
+                    } else {
+                        addSupportMessage('bot', isBengali ? 'দুঃখিত, কোনো একটি সমস্যা হয়েছে। একটু পরে আবার চেষ্টা করুন।' : 'Sorry, something went wrong. Please try again later.');
                     }
+                } catch (err) {
+                    removeTypingIndicator(typingId);
+                    addSupportMessage('bot', isBengali ? 'নেটওয়ার্ক সমস্যা। অনুগ্রহ করে আপনার ইন্টারনেট চেক করুন।' : 'Network error. Please check your connection.');
+                } finally {
+                    sendBtn.disabled = false;
                 }
-                // WhatsApp is a link, so it handles itself. 
-                // We might want to close the widget when clicking WhatsApp but usually better to leave it open for context.
             });
-        });
+        }
+
+        function addTypingIndicator() {
+            const msg = document.createElement('div');
+            const id = 'typing-' + Date.now();
+            msg.id = id;
+            msg.className = `support-msg support-msg--bot typing-indicator`;
+            msg.innerHTML = `<span></span><span></span><span></span>`;
+            supportChatBody.appendChild(msg);
+            supportChatBody.scrollTo({ top: supportChatBody.scrollHeight, behavior: 'smooth' });
+            return id;
+        }
+
+        function removeTypingIndicator(id) {
+            const msg = document.getElementById(id);
+            if (msg) msg.remove();
+        }
 
         function addSupportMessage(sender, text) {
             const msg = document.createElement('div');
