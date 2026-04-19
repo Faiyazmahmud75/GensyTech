@@ -26,7 +26,22 @@ export async function handler(event, context) {
   }
 
   try {
-    const data = JSON.parse(event.body);
+    const rawData = JSON.parse(event.body);
+    
+    // Transform chatHistory from standard format {role, content} 
+    // to Google Gemini format {role, parts: [{text}]} used by Make.com module
+    const transformedHistory = (rawData.chatHistory || []).map(msg => ({
+      role: msg.role === 'assistant' ? 'model' : 'user', // Gemini uses 'model' instead of 'assistant'
+      parts: [{
+        text: msg.content || ''
+      }]
+    }));
+
+    const data = {
+      ...rawData,
+      chatHistory: transformedHistory
+    };
+
     console.log('🤖 Sending data to Make.com Webhook:', JSON.stringify(data, null, 2));
 
     const response = await fetch(WEBHOOK_URL, {
