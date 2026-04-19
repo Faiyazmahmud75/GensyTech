@@ -739,6 +739,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 sendBtn.disabled = true;
 
                 try {
+                    console.log('🤖 [Frontend] Sending to /api/chat:', { chatHistory });
                     const response = await fetch('/api/chat', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -747,8 +748,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     removeTypingIndicator(typingId);
 
+                    console.log('🤖 [Frontend] Response status from /api/chat:', response.status);
+
                     if (response.ok) {
                         const data = await response.json();
+                        console.log('🤖 [Frontend] Response data from /api/chat:', data);
                         const aiReply = data.reply || 'I am sorry, I did not understand that.';
                         // Basic markdown-to-html for bold text or newlines if Make.com returns standard text formatting
                         let formattedReply = aiReply.replace(/\n/g, '<br>');
