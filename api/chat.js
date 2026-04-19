@@ -42,8 +42,6 @@ export async function handler(event, context) {
       chatHistory: transformedHistory
     };
 
-    console.log('🤖 Sending data to Make.com Webhook:', JSON.stringify(data, null, 2));
-
     const response = await fetch(WEBHOOK_URL, {
       method: 'POST',
       headers: {
@@ -53,28 +51,21 @@ export async function handler(event, context) {
       body: JSON.stringify(data)
     });
 
-    console.log('🤖 Make.com Webhook HTTP Status:', response.status);
-
     if (response.ok) {
       // Expecting Make.com Webhook Response module to return the AI's reply
       // E.g. { "reply": "Sure, I can help you with that!" }
       let aiResponseText = "";
       
       const textResponse = await response.text();
-      console.log('🤖 Raw Make.com Response Body:', textResponse);
 
       try {
         const jsonResponse = JSON.parse(textResponse);
-        console.log('🤖 Parsed Make.com JSON:', jsonResponse);
         // Make.com might return `{ "reply": "..." }` based on our frontend expectation
         aiResponseText = jsonResponse.reply || jsonResponse.message || textResponse;
       } catch (e) {
         // If not JSON, assume raw text response from Make.com
-        console.log('🤖 Note: Response body is not JSON compliant.');
         aiResponseText = textResponse;
       }
-
-      console.log('🤖 Final Resolved AI Response Text:', aiResponseText);
 
       return {
         statusCode: 200,
